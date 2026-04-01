@@ -1,0 +1,1340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arteria Health</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='15' fill='black'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='18' font-weight='200' fill='white' text-anchor='middle'%3Ea%3C/text%3E%3C/svg%3E">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,200;0,300;0,400;1,200;1,300;1,400&family=Jost:ital,wght@0,200;0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --black: #000;
+      --off-black: #0a0a0a;
+      --dark-card: #111;
+      --dark-card-border: #282828;
+      --white: #fff;
+      --off-white: #f8f8f8;
+      --gray-light: #e5e5e5;
+      --gray-mid: #aaa;
+      --gray-label: #888;
+      --gray-body: #555;
+      --font-display: 'Cormorant Garamond', Georgia, serif;
+      --font-sans: 'Jost', 'Helvetica Neue', Arial, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      background: var(--black);
+      color: var(--white);
+      overflow-x: hidden;
+    }
+
+    /* ─── NAV ─────────────────────────────────────── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      padding: 22px 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: transparent;
+      transition: background 0.4s, border-bottom 0.4s;
+    }
+    nav.scrolled {
+      background: rgba(0,0,0,0.9);
+      border-bottom: 1px solid #1a1a1a;
+      backdrop-filter: blur(10px);
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: 22px;
+      letter-spacing: 0.05em;
+      color: var(--white);
+      text-decoration: none;
+    }
+    .nav-links {
+      display: flex;
+      gap: 36px;
+      list-style: none;
+    }
+    .nav-links a {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 11.5px;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.75);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--white); }
+
+    /* ─── ANIMATIONS ─────────────────────────────── */
+    .reveal {
+      opacity: 0;
+      transform: translateY(30px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal.visible {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .reveal-delay-1 { transition-delay: 0.1s; }
+    .reveal-delay-2 { transition-delay: 0.2s; }
+    .reveal-delay-3 { transition-delay: 0.3s; }
+    .reveal-delay-4 { transition-delay: 0.4s; }
+    .reveal-delay-5 { transition-delay: 0.5s; }
+    .reveal-delay-6 { transition-delay: 0.6s; }
+    .reveal-left {
+      opacity: 0;
+      transform: translateX(-24px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal-left.visible { opacity: 1; transform: translateX(0); }
+    .reveal-right {
+      opacity: 0;
+      transform: translateX(24px);
+      transition: opacity 0.9s cubic-bezier(0.16,1,0.3,1), transform 0.9s cubic-bezier(0.16,1,0.3,1);
+    }
+    .reveal-right.visible { opacity: 1; transform: translateX(0); }
+
+    /* ─── SECTION LABELS ─────────────────────────── */
+    .section-label {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: 11px;
+      letter-spacing: 0.22em;
+      text-transform: uppercase;
+      color: var(--gray-label);
+      margin-bottom: 24px;
+    }
+    .section-label.light { color: #555; }
+
+    /* ─── HERO ───────────────────────────────────── */
+    #hero {
+      min-height: 100vh;
+      background: var(--black);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 120px 24px 60px;
+      position: relative;
+    }
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 100px;
+      padding: 9px 22px;
+      font-size: 10.5px;
+      letter-spacing: 0.2em;
+      font-weight: 400;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.7);
+      margin-bottom: 52px;
+      animation: fadeSlideDown 1s cubic-bezier(0.16,1,0.3,1) 0.2s both;
+    }
+    .hero-title {
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: clamp(90px, 14vw, 180px);
+      letter-spacing: -0.01em;
+      line-height: 1;
+      color: var(--white);
+      margin-bottom: 12px;
+      animation: fadeSlideDown 1.1s cubic-bezier(0.16,1,0.3,1) 0.35s both;
+    }
+    .hero-divider {
+      width: 40px;
+      height: 1px;
+      background: rgba(255,255,255,0.25);
+      margin: 0 auto 36px;
+      animation: fadeIn 1s ease 0.7s both;
+    }
+    .hero-subtitle {
+      font-size: 16px;
+      font-weight: 300;
+      line-height: 1.65;
+      color: rgba(255,255,255,0.65);
+      max-width: 520px;
+      margin-bottom: 52px;
+      animation: fadeSlideDown 1s cubic-bezier(0.16,1,0.3,1) 0.55s both;
+    }
+    .hero-subtitle strong {
+      font-weight: 500;
+      color: rgba(255,255,255,0.9);
+    }
+    .hero-buttons {
+      display: flex;
+      gap: 16px;
+      flex-wrap: wrap;
+      justify-content: center;
+      animation: fadeSlideDown 1s cubic-bezier(0.16,1,0.3,1) 0.7s both;
+    }
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px 32px;
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      text-decoration: none;
+      cursor: pointer;
+      transition: all 0.25s ease;
+      border: none;
+    }
+    .btn-primary {
+      background: var(--white);
+      color: var(--black);
+    }
+    .btn-primary:hover { background: #ddd; }
+    .btn-secondary {
+      background: transparent;
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.45);
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.07);
+      border-color: rgba(255,255,255,0.7);
+    }
+    .btn-dark {
+      background: var(--black);
+      color: var(--white);
+      border: 1px solid rgba(255,255,255,0.3);
+    }
+    .btn-dark:hover { border-color: rgba(255,255,255,0.7); }
+
+    .hero-scroll {
+      position: absolute;
+      bottom: 36px;
+      left: 50%;
+      transform: translateX(-50%);
+      animation: bounce 2s ease-in-out infinite, fadeIn 1s ease 1.1s both;
+      cursor: pointer;
+      color: rgba(255,255,255,0.4);
+    }
+    .hero-scroll svg { width: 20px; height: 20px; }
+
+    @keyframes fadeSlideDown {
+      from { opacity: 0; transform: translateY(-18px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(7px); }
+    }
+
+    /* ─── CHALLENGE ──────────────────────────────── */
+    #challenge {
+      background: var(--white);
+      color: var(--black);
+      padding: 120px 10vw;
+    }
+    .challenge-inner { max-width: 680px; }
+    .challenge-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(38px, 5vw, 62px);
+      line-height: 1.12;
+      margin-bottom: 36px;
+      color: #111;
+    }
+    .challenge-heading em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+    }
+    .challenge-body {
+      font-size: 15.5px;
+      line-height: 1.8;
+      color: var(--gray-body);
+      margin-bottom: 80px;
+      max-width: 580px;
+    }
+    .challenge-body strong {
+      font-style: italic;
+      font-weight: 400;
+      color: #333;
+    }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border: 1px solid var(--gray-light);
+    }
+    .stat-card {
+      padding: 52px 36px;
+      border-right: 1px solid var(--gray-light);
+      text-align: center;
+    }
+    .stat-card:last-child { border-right: none; }
+    .stat-number {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(52px, 7vw, 80px);
+      line-height: 1;
+      color: #111;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gray-label);
+    }
+
+    /* ─── WAVE ───────────────────────────────────── */
+    #wave-section {
+      background: var(--black);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 48px;
+    }
+    .wave-container {
+      position: relative;
+      width: 100%;
+      max-width: 1100px;
+      border: 1px solid #1e1e1e;
+      overflow: hidden;
+    }
+    #wave-canvas {
+      display: block;
+      width: 100%;
+      height: 360px;
+    }
+    .wave-label {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 10.5px;
+      font-weight: 400;
+      letter-spacing: 0.28em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+      pointer-events: none;
+      white-space: nowrap;
+    }
+
+    /* ─── QUOTE ──────────────────────────────────── */
+    #quote-section {
+      background: var(--off-white);
+      padding: 100px 10vw;
+    }
+    .quote-box {
+      background: #fff;
+      border-left: 3px solid #ddd;
+      padding: 44px 52px;
+      max-width: 900px;
+    }
+    .quote-text {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+      font-size: clamp(17px, 2.2vw, 22px);
+      line-height: 1.65;
+      color: #333;
+    }
+
+    /* ─── ARTERIA SYSTEM ─────────────────────────── */
+    #system {
+      background: var(--black);
+      padding: 120px 48px;
+      text-align: center;
+    }
+    .system-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(46px, 7vw, 90px);
+      color: var(--white);
+      margin-bottom: 32px;
+    }
+    .system-subtext {
+      font-size: 15.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.55);
+      max-width: 600px;
+      margin: 0 auto 80px;
+      line-height: 1.75;
+    }
+    .system-subtext strong {
+      font-weight: 500;
+      color: rgba(255,255,255,0.85);
+    }
+    .system-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0;
+      max-width: 1100px;
+      margin: 0 auto;
+      border: 1px solid var(--dark-card-border);
+    }
+    .system-card {
+      background: var(--dark-card);
+      padding: 48px 40px 56px;
+      border-right: 1px solid var(--dark-card-border);
+      text-align: left;
+      transition: background 0.3s;
+    }
+    .system-card:last-child { border-right: none; }
+    .system-card:hover { background: #161616; }
+    .card-tag {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 36px;
+    }
+    .card-tag-icon {
+      width: 36px;
+      height: 36px;
+      border: 1px solid #333;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .card-tag-icon svg { width: 16px; height: 16px; stroke: rgba(255,255,255,0.5); fill: none; stroke-width: 1.5; }
+    .card-tag-label {
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.4);
+      line-height: 1.4;
+    }
+    .system-card-title {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 28px;
+      color: var(--white);
+      margin-bottom: 20px;
+      line-height: 1.2;
+    }
+    .system-card-body {
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 28px;
+    }
+    .system-card-bullets {
+      list-style: none;
+    }
+    .system-card-bullets li {
+      font-size: 12.5px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.4);
+      padding: 5px 0;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+    .system-card-bullets li::before {
+      content: '';
+      width: 4px;
+      height: 4px;
+      border-radius: 50%;
+      background: rgba(255,255,255,0.25);
+      flex-shrink: 0;
+      margin-top: 7px;
+    }
+
+    /* ─── DEEP DIVE ──────────────────────────────── */
+    #deep-dive {
+      background: var(--white);
+      color: var(--black);
+      padding: 130px 10vw;
+    }
+    .deep-dive-intro { max-width: 700px; margin-bottom: 80px; }
+    .deep-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(36px, 5vw, 58px);
+      line-height: 1.12;
+      margin-bottom: 32px;
+      color: #111;
+    }
+    .deep-heading em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+    }
+    .deep-body {
+      font-size: 15px;
+      line-height: 1.8;
+      color: var(--gray-body);
+    }
+    .biomarkers {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid var(--gray-light);
+    }
+    .biomarker-col {
+      padding: 52px 40px;
+      border-right: 1px solid var(--gray-light);
+    }
+    .biomarker-col:last-child { border-right: none; }
+    .biomarker-name {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: 34px;
+      color: #111;
+      margin-bottom: 20px;
+    }
+    .biomarker-role {
+      font-size: 12px;
+      font-weight: 500;
+      letter-spacing: 0.01em;
+      color: #111;
+      margin-bottom: 14px;
+    }
+    .biomarker-desc {
+      font-size: 13.5px;
+      font-weight: 300;
+      line-height: 1.75;
+      color: var(--gray-body);
+    }
+
+    /* ─── ROADMAP ────────────────────────────────── */
+    #roadmap {
+      background: var(--black);
+      padding: 120px 10vw;
+    }
+    .roadmap-intro { margin-bottom: 80px; }
+    .roadmap-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(32px, 4.5vw, 52px);
+      color: var(--white);
+      line-height: 1.15;
+    }
+    .roadmap-heading em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+    }
+    .roadmap-track {
+      position: relative;
+      max-width: 780px;
+      margin: 0 auto;
+    }
+    .roadmap-line {
+      position: absolute;
+      left: 50%;
+      top: 0; bottom: 0;
+      width: 1px;
+      background: linear-gradient(to bottom, transparent, #333 10%, #333 90%, transparent);
+      transform: translateX(-50%);
+    }
+    .roadmap-step {
+      display: flex;
+      justify-content: flex-start;
+      margin-bottom: 48px;
+      position: relative;
+    }
+    .roadmap-step:nth-child(even) { justify-content: flex-end; }
+    .roadmap-card {
+      width: 45%;
+      background: #111;
+      border: 1px solid #222;
+      padding: 24px 28px;
+      position: relative;
+      transition: border-color 0.3s, background 0.3s;
+    }
+    .roadmap-card:hover { border-color: #444; background: #141414; }
+    .roadmap-dot {
+      position: absolute;
+      top: 24px;
+      width: 8px;
+      height: 8px;
+      background: #333;
+      border-radius: 50%;
+      border: 1px solid #555;
+    }
+    .roadmap-step:nth-child(odd) .roadmap-dot { right: -4.5%; }
+    .roadmap-step:nth-child(even) .roadmap-dot { left: -4.5%; }
+    .roadmap-step.active .roadmap-dot { background: #fff; border-color: #fff; box-shadow: 0 0 12px rgba(255,255,255,0.3); }
+    .stage-badge {
+      display: inline-block;
+      font-size: 9px;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      padding: 4px 10px;
+      border: 1px solid rgba(255,255,255,0.2);
+      color: rgba(255,255,255,0.6);
+      margin-bottom: 12px;
+    }
+    .stage-badge.current {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.4);
+      color: rgba(255,255,255,0.9);
+    }
+    .stage-badge.next {
+      border-color: rgba(255,255,255,0.25);
+      color: rgba(255,255,255,0.7);
+    }
+    .stage-number {
+      font-size: 9.5px;
+      font-weight: 400;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.3);
+      margin-bottom: 8px;
+    }
+    .stage-title {
+      font-family: var(--font-sans);
+      font-weight: 300;
+      font-size: 16px;
+      color: var(--white);
+      margin-bottom: 10px;
+    }
+    .stage-body {
+      font-size: 12px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: rgba(255,255,255,0.4);
+    }
+
+    /* ─── PROTECT ────────────────────────────────── */
+    #protect {
+      background: var(--white);
+      color: var(--black);
+      padding: 120px 10vw;
+    }
+    .protect-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(32px, 4.5vw, 52px);
+      color: #111;
+      margin-bottom: 56px;
+      line-height: 1.15;
+    }
+    .protect-heading em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+    }
+    .audience-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0;
+      border: 1px solid var(--gray-light);
+      margin-bottom: 0;
+    }
+    .audience-card {
+      padding: 36px 28px;
+      border-right: 1px solid var(--gray-light);
+      transition: background 0.25s;
+    }
+    .audience-card:last-child { border-right: none; }
+    .audience-card:hover { background: #f5f5f5; }
+    .audience-icon {
+      font-size: 18px;
+      margin-bottom: 14px;
+      display: block;
+    }
+    .audience-title {
+      font-weight: 400;
+      font-size: 13.5px;
+      color: #111;
+      margin-bottom: 10px;
+    }
+    .audience-desc {
+      font-size: 12.5px;
+      font-weight: 300;
+      line-height: 1.7;
+      color: var(--gray-body);
+    }
+    .providers-row {
+      display: flex;
+      border: 1px solid var(--gray-light);
+      border-top: none;
+    }
+    .providers-label {
+      padding: 28px;
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--gray-label);
+      border-right: 1px solid var(--gray-light);
+      white-space: nowrap;
+      display: flex;
+      align-items: center;
+      min-width: 200px;
+    }
+    .providers-content {
+      padding: 28px 32px;
+      font-size: 13.5px;
+      font-weight: 300;
+      color: var(--gray-body);
+      line-height: 1.7;
+      display: flex;
+      align-items: center;
+    }
+
+    /* ─── CONTACT ────────────────────────────────── */
+    #contact {
+      background: var(--black);
+      padding: 120px 10vw;
+    }
+    .contact-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      max-width: 1000px;
+    }
+    .contact-heading {
+      font-family: var(--font-sans);
+      font-weight: 200;
+      font-size: clamp(32px, 4vw, 50px);
+      color: var(--white);
+      line-height: 1.15;
+      margin-bottom: 24px;
+    }
+    .contact-heading em {
+      font-family: var(--font-display);
+      font-style: italic;
+      font-weight: 300;
+    }
+    .contact-desc {
+      font-size: 14px;
+      font-weight: 300;
+      line-height: 1.8;
+      color: rgba(255,255,255,0.5);
+      margin-bottom: 44px;
+    }
+    .contact-link-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+    .contact-link-icon {
+      width: 32px;
+      height: 32px;
+      border: 1px solid #2a2a2a;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    .contact-link-icon svg { width: 14px; height: 14px; fill: rgba(255,255,255,0.5); }
+    .contact-link-text {
+      font-size: 13px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.6);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .contact-link-text:hover { color: var(--white); }
+
+    /* Form */
+    .contact-form { display: flex; flex-direction: column; gap: 16px; }
+    .form-group { display: flex; flex-direction: column; gap: 6px; }
+    .form-label {
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.35);
+    }
+    .form-input, .form-textarea {
+      background: #0f0f0f;
+      border: 1px solid #222;
+      color: var(--white);
+      font-family: var(--font-sans);
+      font-size: 13.5px;
+      font-weight: 300;
+      padding: 14px 16px;
+      outline: none;
+      transition: border-color 0.2s;
+      width: 100%;
+      resize: none;
+    }
+    .form-input:focus, .form-textarea:focus { border-color: #555; }
+    .form-input::placeholder, .form-textarea::placeholder { color: rgba(255,255,255,0.2); }
+    .form-textarea { min-height: 110px; }
+    .btn-submit {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 16px 24px;
+      background: var(--white);
+      color: var(--black);
+      font-family: var(--font-sans);
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+      width: 100%;
+    }
+    .btn-submit:hover { background: #ddd; }
+    .btn-submit svg { width: 16px; height: 16px; }
+
+    .form-success {
+      display: none;
+      padding: 20px;
+      background: #0f0f0f;
+      border: 1px solid #222;
+      text-align: center;
+      font-size: 13px;
+      color: rgba(255,255,255,0.6);
+      line-height: 1.6;
+    }
+    .form-success.visible { display: block; }
+
+    /* ─── FOOTER ─────────────────────────────────── */
+    footer {
+      background: var(--black);
+      border-top: 1px solid #181818;
+      padding: 52px 10vw 32px;
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 48px;
+    }
+    .footer-logo {
+      font-family: var(--font-display);
+      font-weight: 200;
+      font-size: 26px;
+      color: var(--white);
+      text-decoration: none;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .footer-tagline {
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.3);
+      letter-spacing: 0.05em;
+    }
+    .footer-nav {
+      display: flex;
+      gap: 32px;
+      list-style: none;
+    }
+    .footer-nav a {
+      font-size: 11px;
+      font-weight: 300;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.45);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-nav a:hover { color: var(--white); }
+    .footer-bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid #141414;
+      padding-top: 24px;
+    }
+    .footer-copy {
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.25);
+    }
+    .footer-made {
+      font-size: 11px;
+      font-weight: 300;
+      color: rgba(255,255,255,0.25);
+    }
+
+    /* ─── RESPONSIVE ─────────────────────────────── */
+    @media (max-width: 900px) {
+      nav { padding: 18px 24px; }
+      .nav-links { gap: 20px; }
+      .stats-grid { grid-template-columns: 1fr; }
+      .stat-card { border-right: none; border-bottom: 1px solid var(--gray-light); }
+      .system-cards { grid-template-columns: 1fr; }
+      .system-card { border-right: none; border-bottom: 1px solid var(--dark-card-border); }
+      .biomarkers { grid-template-columns: 1fr; }
+      .biomarker-col { border-right: none; border-bottom: 1px solid var(--gray-light); }
+      .audience-grid { grid-template-columns: 1fr 1fr; }
+      .contact-grid { grid-template-columns: 1fr; gap: 48px; }
+      .footer-top { flex-direction: column; gap: 32px; }
+      .roadmap-step, .roadmap-step:nth-child(even) { justify-content: flex-start; }
+      .roadmap-card { width: 85%; }
+      .roadmap-line { left: 8%; }
+      .roadmap-dot { left: auto !important; right: auto !important; left: -6% !important; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ─── NAV ──────────────────────────────────── -->
+  <nav id="main-nav">
+    <a href="#hero" class="nav-logo">arteria</a>
+    <ul class="nav-links">
+      <li><a href="#system">Products</a></li>
+      <li><a href="#roadmap">Our Work</a></li>
+      <li><a href="#challenge">Company</a></li>
+      <li><a href="#contact">Contact</a></li>
+    </ul>
+  </nav>
+
+  <!-- ─── HERO ─────────────────────────────────── -->
+  <section id="hero">
+    <div class="hero-badge">Wearable Coagulation Monitor &middot; DVT Detection</div>
+    <h1 class="hero-title">arteria</h1>
+    <div class="hero-divider"></div>
+    <p class="hero-subtitle">
+      Proprietary biosensing meets on-device machine learning.
+      <strong>Detecting DVT hours before conventional diagnostics can.</strong>
+    </p>
+    <div class="hero-buttons">
+      <a href="#system" class="btn btn-primary">Discover the Technology</a>
+      <a href="#contact" class="btn btn-secondary">Get in Touch</a>
+    </div>
+    <div class="hero-scroll" onclick="document.getElementById('challenge').scrollIntoView({behavior:'smooth'})">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ─── CHALLENGE ─────────────────────────────── -->
+  <section id="challenge">
+    <div class="challenge-inner">
+      <p class="section-label light reveal">The Challenge</p>
+      <h2 class="challenge-heading reveal reveal-delay-1">
+        A silent threat demands a<br><em>smarter</em> response
+      </h2>
+      <p class="challenge-body reveal reveal-delay-2">
+        Current DVT monitoring is <strong>fundamentally episodic</strong> — ultrasound at fixed intervals, D-dimer from venous blood draws. The diagnostic window is too narrow. By the time a clot is ultrasound-visible, the coagulation cascade has been active for hours. Clinical scoring systems (Wells, YEARS) and CT scans are fraught with delayed diagnosis and radiation exposure.
+      </p>
+    </div>
+    <div class="stats-grid">
+      <div class="stat-card reveal reveal-delay-1">
+        <div class="stat-number" data-count="900" data-suffix="K+">0</div>
+        <div class="stat-label">People affected by embolism annually</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-2">
+        <div class="stat-number" data-count="100" data-suffix="K">0</div>
+        <div class="stat-label">Deaths per year in the US</div>
+      </div>
+      <div class="stat-card reveal reveal-delay-3">
+        <div class="stat-number" data-count="66" data-suffix="%">0</div>
+        <div class="stat-label">Of cases not diagnosed effectively</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── WAVE ──────────────────────────────────── -->
+  <section id="wave-section">
+    <div class="wave-container">
+      <canvas id="wave-canvas"></canvas>
+      <span class="wave-label">Real-Time Impedance Monitoring</span>
+    </div>
+  </section>
+
+  <!-- ─── QUOTE ─────────────────────────────────── -->
+  <section id="quote-section">
+    <div class="quote-box reveal">
+      <p class="quote-text">
+        "Arteria provides the first continuous molecular-level window into coagulation activation, detecting coagulation activation hours before any mechanical clot is ultrasound-visible."
+      </p>
+    </div>
+  </section>
+
+  <!-- ─── ARTERIA SYSTEM ────────────────────────── -->
+  <section id="system">
+    <p class="section-label reveal">Our Innovation</p>
+    <h2 class="system-heading reveal reveal-delay-1">The Arteria System</h2>
+    <p class="system-subtext reveal reveal-delay-2">
+      Three integrated innovations in one wearable patch. Molecular-level coagulation monitoring that detects DVT <strong>hours before mechanical ultrasound</strong>, targeting the primary anatomical site of DVT initiation.
+    </p>
+    <div class="system-cards">
+      <div class="system-card reveal reveal-delay-1">
+        <div class="card-tag">
+          <div class="card-tag-icon">
+            <svg viewBox="0 0 24 24"><rect x="3" y="3" width="18" height="18" rx="1"/><circle cx="12" cy="12" r="4"/><line x1="12" y1="3" x2="12" y2="7"/><line x1="12" y1="17" x2="12" y2="21"/><line x1="3" y1="12" x2="7" y2="12"/><line x1="17" y1="12" x2="21" y2="12"/></svg>
+          </div>
+          <span class="card-tag-label">Proprietary Sensing<br>Architecture</span>
+        </div>
+        <h3 class="system-card-title">Nanophotonic Biosensor</h3>
+        <p class="system-card-body">A novel biosensing approach optimized for coagulation biomarker detection at diagnostically relevant concentrations — achieving sensitivity levels unreachable by conventional electrode designs.</p>
+        <ul class="system-card-bullets">
+          <li>Multi-biomarker simultaneous detection</li>
+          <li>Sub-nanomolar sensitivity</li>
+          <li>Continuous electrochemical readout</li>
+        </ul>
+      </div>
+      <div class="system-card reveal reveal-delay-2">
+        <div class="card-tag">
+          <div class="card-tag-icon">
+            <svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+          </div>
+          <span class="card-tag-label">Painless ISF Access</span>
+        </div>
+        <h3 class="system-card-title">Minimally-Invasive Sampling</h3>
+        <p class="system-card-body">A microneedle array penetrates only the outermost skin layer, accessing interstitial fluid without blood contact. Biomarker concentrations in ISF closely track plasma levels — enabling continuous monitoring without any needle stick.</p>
+        <ul class="system-card-bullets">
+          <li>No blood draw required</li>
+          <li>Passive fluid sampling</li>
+          <li>Worn over target anatomical site</li>
+        </ul>
+      </div>
+      <div class="system-card reveal reveal-delay-3">
+        <div class="card-tag">
+          <div class="card-tag-icon">
+            <svg viewBox="0 0 24 24"><rect x="2" y="3" width="20" height="14" rx="1"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+          </div>
+          <span class="card-tag-label">Real-Time Edge Inference</span>
+        </div>
+        <h3 class="system-card-title">Temporal ML Classifier</h3>
+        <p class="system-card-body">A temporal machine learning model runs entirely on-device, learning the characteristic multi-biomarker trajectory of early coagulation cascade activation — issuing alerts hours before a clot becomes mechanically detectable.</p>
+        <ul class="system-card-bullets">
+          <li>4-class risk output</li>
+          <li>On-device inference, no cloud</li>
+          <li>Wireless clinician dashboard</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── DEEP DIVE ─────────────────────────────── -->
+  <section id="deep-dive">
+    <div class="deep-dive-intro">
+      <p class="section-label light reveal">Deep Dive</p>
+      <h2 class="deep-heading reveal reveal-delay-1">Engineering a <em>molecular</em> early warning system</h2>
+      <p class="deep-body reveal reveal-delay-2">A proprietary multi-biomarker panel. On-device temporal intelligence. Real-time cascade detection — issuing alerts hours before conventional diagnostics.</p>
+    </div>
+    <div class="biomarkers">
+      <div class="biomarker-col reveal reveal-delay-1">
+        <h3 class="biomarker-name">Biomarker A</h3>
+        <p class="biomarker-role">Earliest Indicator</p>
+        <p class="biomarker-desc">Released at the first moment of cascade activation. Most stable marker in interstitial fluid.</p>
+      </div>
+      <div class="biomarker-col reveal reveal-delay-2">
+        <h3 class="biomarker-name">Biomarker B</h3>
+        <p class="biomarker-role">Secondary Confirmation</p>
+        <p class="biomarker-desc">Follows primary activation. Confirms coagulation cascade progression rather than transient fluctuation.</p>
+      </div>
+      <div class="biomarker-col reveal reveal-delay-3">
+        <h3 class="biomarker-name">Biomarker C</h3>
+        <p class="biomarker-role">Tertiary Signal</p>
+        <p class="biomarker-desc">Elevated after clot consolidation. Provides systemic confirmation and rules out false positives.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── ROADMAP ───────────────────────────────── -->
+  <section id="roadmap">
+    <div class="roadmap-intro reveal">
+      <p class="section-label">Road Map</p>
+      <h2 class="roadmap-heading">From lab bench to <em>standard<br>of care</em></h2>
+    </div>
+    <div class="roadmap-track">
+      <div class="roadmap-line"></div>
+
+      <div class="roadmap-step active">
+        <div class="roadmap-card reveal reveal-left">
+          <div class="stage-badge current">Current</div>
+          <div class="stage-number">Stage 1</div>
+          <h3 class="stage-title">Prototype Development</h3>
+          <p class="stage-body">Building our first-generation wearable architecture. Biosensor design, device fabrication, and processing pipeline are actively advancing toward clinical validation.</p>
+        </div>
+        <div class="roadmap-dot"></div>
+      </div>
+
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-card reveal reveal-right">
+          <div class="stage-badge next">Up Next →</div>
+          <div class="stage-number">Stage 2</div>
+          <h3 class="stage-title">Bench Validation</h3>
+          <p class="stage-body">In-vitro testing of biosensor performance, biomarker selectivity, and temporal ML model accuracy across synthetic plasma and ISF samples.</p>
+        </div>
+      </div>
+
+      <div class="roadmap-step">
+        <div class="roadmap-card reveal reveal-left">
+          <div class="stage-badge">Stage 3</div>
+          <div class="stage-number">Stage 3</div>
+          <h3 class="stage-title">Clinical Pilot</h3>
+          <p class="stage-body">Partnering with leading hospitals to monitor high-risk post-operative patients, validating detection lead-time over conventional imaging under real clinical conditions.</p>
+        </div>
+        <div class="roadmap-dot"></div>
+      </div>
+
+      <div class="roadmap-step">
+        <div class="roadmap-dot"></div>
+        <div class="roadmap-card reveal reveal-right">
+          <div class="stage-badge">Stage 4</div>
+          <div class="stage-number">Stage 4</div>
+          <h3 class="stage-title">Regulatory Pathway</h3>
+          <p class="stage-body">FDA De Novo submission with supporting clinical evidence. Pursuing breakthrough device designation to accelerate review timeline and access to market.</p>
+        </div>
+      </div>
+
+      <div class="roadmap-step">
+        <div class="roadmap-card reveal reveal-left">
+          <div class="stage-badge">Stage 5</div>
+          <div class="stage-number">Stage 5</div>
+          <h3 class="stage-title">Commercial Launch</h3>
+          <p class="stage-body">Scaling manufacturing, establishing hospital partnerships, and launching a continuous monitoring subscription model targeting high-acuity inpatient settings.</p>
+        </div>
+        <div class="roadmap-dot"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── PROTECT ───────────────────────────────── -->
+  <section id="protect">
+    <p class="section-label light reveal">Who We Serve</p>
+    <h2 class="protect-heading reveal reveal-delay-1">Protecting those most <em>vulnerable</em></h2>
+    <div class="audience-grid">
+      <div class="audience-card reveal reveal-delay-1">
+        <span class="audience-icon">✦</span>
+        <h4 class="audience-title">Post-Operative Patients</h4>
+        <p class="audience-desc">Surgical immobility is the leading trigger of DVT. Arteria provides continuous watch during the highest-risk recovery window.</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-2">
+        <span class="audience-icon">✦</span>
+        <h4 class="audience-title">Cancer Patients</h4>
+        <p class="audience-desc">Procoagulant factors in oncology dramatically elevate clot risk. Arteria enables clinicians to preempt thrombotic events before they escalate.</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-3">
+        <span class="audience-icon">✦</span>
+        <h4 class="audience-title">Bedridden Patients</h4>
+        <p class="audience-desc">Long-term immobility patients in the ICU or care facilities represent a high-risk population with limited continuous monitoring options today.</p>
+      </div>
+      <div class="audience-card reveal reveal-delay-4">
+        <span class="audience-icon">✦</span>
+        <h4 class="audience-title">Pregnant Women</h4>
+        <p class="audience-desc">Pregnancy increases DVT risk up to 5×. Arteria offers a non-invasive route to continuous surveillance without radiation or repeated blood draws.</p>
+      </div>
+    </div>
+    <div class="providers-row reveal reveal-delay-5">
+      <span class="providers-label">Insurers &amp; Healthcare Providers</span>
+      <span class="providers-content">Arteria's early intervention model reduces downstream costs of missed clots — aligning clinical outcomes with payer incentives and value-based care frameworks.</span>
+    </div>
+  </section>
+
+  <!-- ─── CONTACT ───────────────────────────────── -->
+  <section id="contact">
+    <div class="contact-grid">
+      <div>
+        <p class="section-label reveal">Get In Touch</p>
+        <h2 class="contact-heading reveal reveal-delay-1">Let's build the future of <em>vascular health</em></h2>
+        <p class="contact-desc reveal reveal-delay-2">Whether you're a healthcare provider, investor, or potential partner, we'd love to hear from you. Join us in revolutionizing clot detection.</p>
+        <div class="contact-link-item reveal reveal-delay-3">
+          <div class="contact-link-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="1.5"/></svg>
+          </div>
+          <a href="mailto:arteria.ventures@gmail.com" class="contact-link-text">arteria.ventures@gmail.com</a>
+        </div>
+        <div class="contact-link-item reveal reveal-delay-4">
+          <div class="contact-link-icon">
+            <svg viewBox="0 0 24 24"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"/><rect x="2" y="9" width="4" height="12"/><circle cx="4" cy="4" r="2"/></svg>
+          </div>
+          <a href="https://linkedin.com/company/arteriahealth" target="_blank" class="contact-link-text">@arteriahealth</a>
+        </div>
+      </div>
+      <div>
+        <div class="contact-form reveal reveal-delay-2" id="contact-form-wrap">
+          <div class="form-group">
+            <label class="form-label">Name</label>
+            <input type="text" class="form-input" id="form-name" placeholder="Your full name">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Email</label>
+            <input type="email" class="form-input" id="form-email" placeholder="your@email.com">
+          </div>
+          <div class="form-group">
+            <label class="form-label">Message</label>
+            <textarea class="form-textarea" id="form-message" placeholder="What's on your mind?"></textarea>
+          </div>
+          <button class="btn-submit" onclick="submitForm()">
+            <span>Send Message</span>
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/>
+            </svg>
+          </button>
+        </div>
+        <div class="form-success" id="form-success">
+          ✦ &nbsp; Message received.<br>We'll be in touch soon.
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ─── FOOTER ────────────────────────────────── -->
+  <footer>
+    <div class="footer-top">
+      <div>
+        <a href="#hero" class="footer-logo">arteria</a>
+        <p class="footer-tagline">Vascular Health Company</p>
+      </div>
+      <ul class="footer-nav">
+        <li><a href="#system">Products</a></li>
+        <li><a href="#roadmap">Our Work</a></li>
+        <li><a href="#challenge">Company</a></li>
+        <li><a href="#contact">Contact</a></li>
+      </ul>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">&copy; 2024 Arteria, All rights reserved.</p>
+      <p class="footer-made">Designed &amp; developed by Arteria</p>
+    </div>
+  </footer>
+
+  <script>
+    /* ── NAV SCROLL ─────────────────────────────── */
+    const nav = document.getElementById('main-nav');
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('scrolled', window.scrollY > 60);
+    });
+
+    /* ── WAVE CANVAS ─────────────────────────────── */
+    (function() {
+      const canvas = document.getElementById('wave-canvas');
+      const ctx = canvas.getContext('2d');
+      let W, H, t = 0;
+
+      function resize() {
+        const rect = canvas.parentElement.getBoundingClientRect();
+        W = canvas.width = Math.round(rect.width * window.devicePixelRatio);
+        H = canvas.height = 360 * window.devicePixelRatio;
+        canvas.style.height = '360px';
+      }
+
+      function draw() {
+        ctx.clearRect(0, 0, W, H);
+        ctx.fillStyle = '#0a0a0a';
+        ctx.fillRect(0, 0, W, H);
+
+        const waves = [
+          { amp: 28, freq: 0.008, phase: 0,    speed: 0.018, opacity: 0.22, width: 1.2 },
+          { amp: 18, freq: 0.013, phase: 1.2,  speed: 0.025, opacity: 0.14, width: 0.9 },
+          { amp: 38, freq: 0.005, phase: 2.5,  speed: 0.012, opacity: 0.10, width: 0.7 },
+          { amp: 22, freq: 0.010, phase: 0.6,  speed: 0.020, opacity: 0.18, width: 1.0 },
+        ];
+
+        waves.forEach(w => {
+          ctx.beginPath();
+          ctx.strokeStyle = `rgba(255,255,255,${w.opacity})`;
+          ctx.lineWidth = w.width * window.devicePixelRatio;
+          const cy = H / 2;
+          for (let x = 0; x <= W; x += 2) {
+            const y = cy
+              + Math.sin(x * w.freq + t * w.speed) * w.amp * window.devicePixelRatio
+              + Math.sin(x * w.freq * 0.5 + t * w.speed * 0.7) * (w.amp * 0.4) * window.devicePixelRatio;
+            x === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
+          }
+          ctx.stroke();
+        });
+
+        t++;
+        requestAnimationFrame(draw);
+      }
+
+      window.addEventListener('resize', resize);
+      resize();
+      draw();
+    })();
+
+    /* ── SCROLL REVEAL ───────────────────────────── */
+    const revealEls = document.querySelectorAll('.reveal, .reveal-left, .reveal-right');
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          e.target.classList.add('visible');
+          observer.unobserve(e.target);
+        }
+      });
+    }, { threshold: 0.12, rootMargin: '0px 0px -40px 0px' });
+    revealEls.forEach(el => observer.observe(el));
+
+    /* ── COUNT UP ANIMATION ──────────────────────── */
+    const counters = document.querySelectorAll('[data-count]');
+    const countObserver = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          const el = e.target;
+          const target = parseInt(el.dataset.count);
+          const suffix = el.dataset.suffix || '';
+          const duration = 1400;
+          const start = performance.now();
+          function step(now) {
+            const progress = Math.min((now - start) / duration, 1);
+            const ease = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.floor(ease * target) + suffix;
+            if (progress < 1) requestAnimationFrame(step);
+          }
+          requestAnimationFrame(step);
+          countObserver.unobserve(el);
+        }
+      });
+    }, { threshold: 0.5 });
+    counters.forEach(el => countObserver.observe(el));
+
+    /* ── CONTACT FORM ────────────────────────────── */
+    function submitForm() {
+      const name = document.getElementById('form-name').value.trim();
+      const email = document.getElementById('form-email').value.trim();
+      const msg = document.getElementById('form-message').value.trim();
+
+      if (!name || !email || !msg) {
+        const inputs = document.querySelectorAll('.form-input, .form-textarea');
+        inputs.forEach(i => {
+          if (!i.value.trim()) {
+            i.style.borderColor = '#555';
+            setTimeout(() => i.style.borderColor = '#222', 2000);
+          }
+        });
+        return;
+      }
+
+      const mailto = `mailto:arteria.ventures@gmail.com?subject=Message from ${encodeURIComponent(name)}&body=${encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${msg}`)}`;
+      window.location.href = mailto;
+
+      document.getElementById('contact-form-wrap').style.display = 'none';
+      const success = document.getElementById('form-success');
+      success.classList.add('visible');
+    }
+
+    /* ── SMOOTH SCROLL FOR BUTTONS ───────────────── */
+    document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+      anchor.addEventListener('click', e => {
+        const target = document.querySelector(anchor.getAttribute('href'));
+        if (target) {
+          e.preventDefault();
+          target.scrollIntoView({ behavior: 'smooth' });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
